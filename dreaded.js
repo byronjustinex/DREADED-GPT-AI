@@ -41,6 +41,7 @@ module.exports = dreaded = async (client, m, chatUpdate, store) => {
         : "";
     var budy = typeof m.text == "string" ? m.text : "";
    // leave the prefix string empty if you don't want the bot to use a prefix
+const mode = process.env.MODE || 'PUBLIC';
     const prefix = process.env.PREFIX || '.';
 const Heroku = require("heroku-client");  
  const appname = process.env.APP_NAME || '';
@@ -95,9 +96,10 @@ const menu = process.env.MENU_TYPE || 'VIDEO';
     const badword = bad.split(",");
     const Owner = DevDreaded.map((v) => v.replace(/[^0-9]/g, "") + "@s.whatsapp.net").includes(m.sender)
     // Group
+    
     const groupMetadata = m.isGroup ? await client.groupMetadata(m.chat).catch((e) => {}) : "";
-    const groupName = m.isGroup ? groupMetadata.subject : "";
-    const participants = m.isGroup ? await groupMetadata.participants : ""; 
+const groupName = m.isGroup && groupMetadata ? await groupMetadata.subject : "";
+    const participants = m.isGroup && groupMetadata ? await groupMetadata.participants : ""; 
      const groupAdmin = m.isGroup ? await getGroupAdmins(participants) : ""; 
      const isBotAdmin = m.isGroup ? groupAdmin.includes(botNumber) : false; 
      const isAdmin = m.isGroup ? groupAdmin.includes(m.sender) : false;
@@ -242,7 +244,9 @@ if (wapresence === 'recording' && !m.isGroup) {
   client.sendPresenceUpdate('composing', m.chat);
     }
     
-
+if (cmd && mode === 'PRIVATE' && !itsMe && !Owner) {
+return;
+}
 
 
     if (autoread === 'TRUE' && !m.isGroup) { 
